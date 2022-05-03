@@ -27,6 +27,7 @@ STICKER_ID = 'AgADHhEAAixS0Ek'
 GIPHY_LIMIT = 25
 YUGE_ID = 'l0HefZY0mFfLS9AFa'
 YUGE_REGEX = re.compile(r'[h|y]u+ge', re.IGNORECASE)
+JEFF_REGEX = re.compile(r'jeff|bezos', re.IGNORECASE)
 #####################
 
 
@@ -62,6 +63,21 @@ def send_yuge(update: Update, context: CallbackContext):
 yuge_handler = MessageHandler(Filters.text & Filters.regex(YUGE_REGEX), send_yuge)
 dispatcher.add_handler(yuge_handler)
 
+
+def grab_random_jeff_gif():
+    api_response = api_instance.gifs_search_get(GIPHY_TOKEN, 'bezos', limit = GIPHY_LIMIT)
+    url = api_response.data[random.randrange(GIPHY_LIMIT)].images.downsized_small.mp4
+    logging.info(f'Grabbed random Jeff image: {url}')
+    return url
+
+def send_jeff(update: Update, context: CallbackContext):
+    jeff = grab_random_jeff_gif()
+    context.bot.send_animation(chat_id = update.effective_chat.id, animation = jeff)
+    logging.info('Jeff gif sent to chat.')
+
+
+jeff_handler = MessageHandler(Filters.text & Filters.regex(JEFF_REGEX), send_jeff)
+dispatcher.add_handler(jeff_handler)
 
 updater.start_polling()
 updater.idle()
