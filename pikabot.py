@@ -4,6 +4,7 @@ import logging
 import random
 import os
 import sys
+import re
 
 from telegram import Update
 from telegram.ext import Updater, CallbackContext, MessageHandler, Filters
@@ -24,6 +25,8 @@ except KeyError:
 STICKER_PACK = 'MrAss'
 STICKER_ID = 'AgADHhEAAixS0Ek'
 GIPHY_LIMIT = 25
+YUGE_ID = 'l0HefZY0mFfLS9AFa'
+YUGE_REGEX = re.compile(r'[h|y]u+ge', re.IGNORECASE)
 #####################
 
 
@@ -46,9 +49,19 @@ def reply_to_pika(update: Update, context: CallbackContext):
         context.bot.send_animation(chat_id = update.effective_chat.id, animation = pika)
         logging.info('Pika gif sent to chat.')
 
-
 morning_handler = MessageHandler(Filters.sticker, reply_to_pika)
 dispatcher.add_handler(morning_handler)
+
+
+def send_yuge(update: Update, context: CallbackContext):
+    api_response = api_instance.gifs_gif_id_get(GIPHY_TOKEN, YUGE_ID)
+    url = api_response.data.images.downsized_small.mp4
+    context.bot.send_animation(chat_id = update.effective_chat.id, animation = url)
+    logging.info('Yuge gif sent to chat.')
+
+yuge_handler = MessageHandler(Filters.text & Filters.regex(YUGE_REGEX), send_yuge)
+dispatcher.add_handler(yuge_handler)
+
 
 updater.start_polling()
 updater.idle()
