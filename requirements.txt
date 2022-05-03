@@ -1,0 +1,2 @@
+giphy-client==1.0.0
+python-telegram-bot==13.11
