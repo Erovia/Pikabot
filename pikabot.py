@@ -26,8 +26,10 @@ STICKER_PACK = 'MrAss'
 STICKER_ID = 'AgADHhEAAixS0Ek'
 GIPHY_LIMIT = 25
 YUGE_ID = 'l0HefZY0mFfLS9AFa'
+MAYBE_ID = 'gZGlQX3wWAV1u'
 YUGE_REGEX = re.compile(r'[h|y]u+ge', re.IGNORECASE)
 JEFF_REGEX = re.compile(r'jeff|bezos', re.IGNORECASE)
+MAYBE_REGEX = re.compile(r'ma+ybe', re.IGNORECASE)
 #####################
 
 
@@ -62,6 +64,16 @@ def send_yuge(update: Update, context: CallbackContext):
 
 yuge_handler = MessageHandler(Filters.text & Filters.regex(YUGE_REGEX), send_yuge)
 dispatcher.add_handler(yuge_handler)
+
+
+def send_maybe(update: Update, context: CallbackContext):
+    api_response = api_instance.gifs_gif_id_get(GIPHY_TOKEN, MAYBE_ID)
+    url = api_response.data.images.downsized_small.mp4
+    context.bot.send_animation(chat_id = update.effective_chat.id, animation = url)
+    logging.info('Maybe gif sent to chat.')
+
+maybe_handler = MessageHandler(Filters.text & Filters.regex(MAYBE_REGEX), send_maybe)
+dispatcher.add_handler(maybe_handler)
 
 
 def grab_random_jeff_gif():
